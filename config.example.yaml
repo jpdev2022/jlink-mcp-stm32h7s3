@@ -1,0 +1,30 @@
+target:
+  device: STM32H7S3L8
+  interface: SWD
+  speed_khz: 4000
+  jlink_serial: null
+
+executables:
+  jlink: JLinkExe
+  gdb_server: JLinkGDBServer
+  gdb: arm-none-eabi-gdb
+
+external_flash:
+  enabled: true
+  controller: XSPI2
+  mapped_address: 0x70000000
+  size: 0
+  jedec_id: null
+
+images:
+  elf: null
+
+debug:
+  gdb_port: 2331
+  gdb_startup_timeout_s: 8
+  gdb_command_timeout_s: 5
+
+safety:
+  require_erase_confirmation: true
+  max_memory_write_bytes: 4096
+  allow_raw_jlink_command: true
