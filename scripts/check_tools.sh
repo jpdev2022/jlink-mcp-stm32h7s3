@@ -1,14 +1,16 @@
 #!/usr/bin/env bash
-set -u
+set -euo pipefail
 
-echo "J-Link:"
-command -v JLinkExe || echo "MISSING: JLinkExe"
+for tool in JLinkExe JLinkGDBServer; do
+  if command -v "$tool" >/dev/null 2>&1; then
+    echo "OK: $tool -> $(command -v "$tool")"
+  else
+    echo "MISSING: $tool"
+  fi
+done
 
-echo "J-Link GDB Server:"
-command -v JLinkGDBServer || echo "MISSING: JLinkGDBServer"
-
-echo "GDB:"
-command -v arm-none-eabi-gdb || command -v gdb-multiarch || echo "MISSING: ARM GDB"
-
-echo "Python:"
-python3 --version
+for tool in arm-none-eabi-gdb gdb-multiarch; do
+  if command -v "$tool" >/dev/null 2>&1; then
+    echo "OK: $tool -> $(command -v "$tool")"
+  fi
+done

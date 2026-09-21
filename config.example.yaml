@@ -1,5 +1,13 @@
+# Board profile: custom STM32H7S3I8T6 (LQFP176) + 512-Mbit Macronix OctaFlash.
+# The external NOR is assumed to be the 512-Mbit density equivalent of the
+# NUCLEO-H7S3L8's MX25UW25645GXDI00: MX25UW51245GXDI00. Verify the exact BOM
+# marking and board schematic before enabling any future programming backend.
+
 target:
-  device: STM32H7S3L8
+  device: STM32H7S3I8T6
+  # SEGGER's device name omits the package/temperature suffix.
+  jlink_device: STM32H7S3I8
+  package: LQFP176
   interface: SWD
   speed_khz: 4000
   jlink_serial: null
@@ -11,20 +19,61 @@ executables:
 
 external_flash:
   enabled: true
-  controller: XSPI2
-  mapped_address: 0x70000000
-  size: 0
-  jedec_id: null
+  controller: XSPI1
+  # STM32H7S3 XSPI1 memory-mapped window.
+  mapped_address: 0x90000000
+  # 512 Mbit = 64 MiB.
+  size: 67108864
+  part_number: MX25UW51245GXDI00
+  density_bits: 536870912
+  voltage_min_v: 1.65
+  voltage_max_v: 2.0
+  max_clock_mhz: 200
+  protocol: "Octal I/O / DTR-capable"
+  chip_select: NCS1
+  # Macronix RDID: C2 81 3A for MX25UW51245G.
+  jedec_id: "C2 81 3A"
+  # STM32 HAL name; despite the MB suffix, this denotes 512 Mbit = 64 MiB.
+  hal_memory_size: HAL_XSPI_SIZE_512MB
 
-images:
-  elf: null
+svd:
+  path: null
+
+elf:
+  path: null
+
+rtt:
+  enabled: true
+  host: 127.0.0.1
+  # SEGGER default RTT TELNET port. Keep unique if multiple J-Link sessions run on one host.
+  telnet_port: 19021
+  max_read_bytes: 4096
+  max_write_bytes: 4096
+  connect_timeout_s: 3.0
+  read_timeout_s: 0.25
+  # Optional fixed RTT control block/search ranges. Leave null/empty for SEGGER auto-detection.
+  control_block: null
+  search_ranges: []
 
 debug:
   gdb_port: 2331
   gdb_startup_timeout_s: 8
   gdb_command_timeout_s: 5
+  gdb_poll_interval_s: 0.05
 
 safety:
-  require_erase_confirmation: true
+  mode: normal   # normal | read_only
+  require_write_confirmation: true
+  require_flash_confirmation: true
+  max_memory_read_bytes: 65536
   max_memory_write_bytes: 4096
-  allow_raw_jlink_command: true
+  max_raw_command_length: 256
+  allow_raw_jlink_command: false
+
+option_bytes:
+  enabled: true
+  # Option-byte writes are intentionally disabled until the exact register
+  # programming sequence is implemented/tested against STM32H7S3 hardware.
+  allow_write: false
+  allow_mass_erase: false
+  read_mode: "registers"

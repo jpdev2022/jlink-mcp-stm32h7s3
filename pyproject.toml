@@ -4,8 +4,8 @@ build-backend = "hatchling.build"
 
 [project]
 name = "stm32-jlink-mcp"
-version = "0.1.0"
-description = "MCP server for AI-assisted STM32 debugging through SEGGER J-Link"
+version = "0.2.3"
+description = "AI-native STM32H7S3 debug and firmware engineering MCP server backed by SEGGER J-Link"
 readme = "README.md"
 requires-python = ">=3.10"
 license = {file = "LICENSE"}
@@ -32,6 +32,9 @@ packages = ["src/stm32_jlink_mcp"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+markers = [
+  "hardware: requires a physical J-Link and STM32 target",
+]
 asyncio_mode = "auto"
 
 [tool.ruff]
